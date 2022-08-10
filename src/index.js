@@ -10,24 +10,23 @@ box: document.querySelector('.country-info'),
 }
 const BASE_URL = "https://restcountries.com/v3.1/";
 
+function fetchCountries(name) {
+
+    return fetch(`${BASE_URL}name/${name}?`)
+.then((response) => response.json())
+.catch((error) => {console.log("error", error)})
+};
+
 
 const onInputSearch = (e) => {
-const name = e.target.value.trim().toLowerCase();
-const url = `${BASE_URL}name/${name}?`;
+const nameCountry = e.target.value.trim().toLowerCase();
 
-if(name === "") {
+if(nameCountry === "") {
     cleanMarkup()
 } 
-    fetch(url)
-    .then((response) => response.json())
-    .then((data) => {
-        insertMarkup(data)
-    })
-
-    .catch(error => notFound(error));
-
-// .catch((error) => {
-//     console.log(error) })
+fetchCountries(nameCountry)
+.then(data => insertMarkup(data))
+.catch(error => notFound(error));
 }
 
 
@@ -75,11 +74,7 @@ function cleanMarkup(){
     refs.box.innerHTML = "";
 }
 
-
-const notFound = () => {
-    cleanMarkup()
-    Notiflix.Notify.failure('Oops, there is no country with that name');
-      }
-
-
-      
+      const notFound = () => {
+            Notiflix.Notify.failure('Oops, there is no country with that name')
+            cleanMarkup();
+        };
