@@ -23,6 +23,7 @@ const nameCountry = e.target.value.trim().toLowerCase();
 
 if(nameCountry === "") {
     cleanMarkup()
+    return;
 } 
 fetchCountries(nameCountry)
 .then(data => insertMarkup(data))
@@ -74,7 +75,7 @@ function cleanMarkup(){
     refs.box.innerHTML = "";
 }
 
-      const notFound = () => {
+      function notFound() {
             Notiflix.Notify.failure('Oops, there is no country with that name')
             cleanMarkup();
         };
