@@ -1,6 +1,7 @@
 import debounce from 'lodash.debounce';
 import './css/styles.css';
 import Notiflix from 'notiflix';
+import { fetchCountries } from './fetch';
 
 const DEBOUNCE_DELAY = 300;
 const refs = {
@@ -8,28 +9,23 @@ input: document.querySelector('#search-box'),
 list: document.querySelector('.country-list'),
 box: document.querySelector('.country-info'),
 }
-const BASE_URL = "https://restcountries.com/v3.1/";
-
-function fetchCountries(name) {
-
-    return fetch(`${BASE_URL}name/${name}?`)
-.then((response) => response.json())
-.catch((error) => {console.log("error", error)})
-};
 
 
 const onInputSearch = (e) => {
+    cleanMarkup()
 const nameCountry = e.target.value.trim().toLowerCase();
 
 if(nameCountry === "") {
     cleanMarkup()
     return;
-} 
-fetchCountries(nameCountry)
-.then(data => insertMarkup(data))
-.catch(error => notFound(error));
+}  
+  fetchCountries(nameCountry)
+  .then(countries => {
+    insertMarkup(countries);
+  }).catch(error => {if(error === "Error 404") {
+    Notiflix.Notify.failure("Oops, there is no country with that name")
+  }})
 }
-
 
 refs.input.addEventListener('input', debounce(onInputSearch, DEBOUNCE_DELAY));
 
@@ -65,7 +61,7 @@ function generateMarkup(array) {
 }
 
 
-const insertMarkup = array => {
+function insertMarkup(array) {
     const result = generateMarkup(array);
     refs.list.insertAdjacentHTML('beforeend', result);
 }
@@ -74,8 +70,3 @@ function cleanMarkup(){
     refs.list.innerHTML = "";
     refs.box.innerHTML = "";
 }
-
-      function notFound() {
-            Notiflix.Notify.failure('Oops, there is no country with that name')
-            cleanMarkup();
-        };
